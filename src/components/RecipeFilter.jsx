@@ -1,26 +1,42 @@
 import React from 'react';
-import { View, Button } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const RecipeFilter = ({ currentFilter, onFilterChange }) => {
+const RecipeFilter = ({ selectedStatus, onSelectStatus }) => {
+  // Mapeamento de IDs de status para nomes e cores
+  const statusOptions = {
+    '1': { name: 'Em Andamento', color: '#BD1E18' },
+    '2': { name: 'Completo', color: '#1F7D38' },
+  };
+
   return (
-    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-      <Button
-        title="Em Andamento"
-        onPress={() => onFilterChange('in_progress')}
-        color={currentFilter === 'in_progress' ? 'blue' : 'gray'}
-      />
-      <Button
-        title="Rascunho"
-        onPress={() => onFilterChange('draft')}
-        color={currentFilter === 'draft' ? 'blue' : 'gray'}
-      />
-      <Button
-        title="Concluído"
-        onPress={() => onFilterChange('completed')}
-        color={currentFilter === 'completed' ? 'blue' : 'gray'}
-      />
+    <View style={styles.container}>
+      {Object.keys(statusOptions).map(id => (
+        <TouchableOpacity
+          key={id}
+          style={[styles.button, { backgroundColor: statusOptions[id].color }]}
+          onPress={() => onSelectStatus(id)}
+        >
+          <Text style={styles.buttonText}>{statusOptions[id].name}</Text>
+        </TouchableOpacity>
+      ))}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+});
 
 export default RecipeFilter;

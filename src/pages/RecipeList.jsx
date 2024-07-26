@@ -1,32 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList } from 'react-native';
 import RecipeFilter from '../components/RecipeFilter';
 import Recipe from '../components/Recipe';
 
 const recipes = [
-  { id: '1', name: 'Receita 1', description: 'Descrição da Receita 1', status: 'in_progress' },
-  { id: '2', name: 'Receita 2', description: 'Descrição da Receita 2', status: 'draft' },
-  { id: '3', name: 'Receita 3', description: 'Descrição da Receita 3', status: 'completed' },
-  { id: '4', name: 'Receita 4', description: 'Descrição da Receita 4', status: 'in_progress' },
-  { id: '5', name: 'Receita 5', description: 'Descrição da Receita 5', status: 'draft' },
+  { id: '1', name: 'Receita 1', description: 'Descrição da Receita 1', status: '1' },
+  { id: '2', name: 'Receita 2', description: 'Descrição da Receita 2', status: '2' },
+  { id: '3', name: 'Receita 3', description: 'Descrição da Receita 3', status: '2' },
+  { id: '4', name: 'Receita 4', description: 'Descrição da Receita 4', status: '1' },
+  { id: '5', name: 'Receita 5', description: 'Descrição da Receita 5', status: '2' },
 ];
 
 function RecipeList({ navigation }) {
-  const [filter, setFilter] = useState('in_progress');
+  const [selectedStatus, setSelectedStatus] = useState('1'); // Default filter
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredRecipes = recipes
-    .filter(recipe => recipe.status === filter)
+    .filter(recipe => recipe.status === selectedStatus)
     .filter(recipe => recipe.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    console.log("teste")
-
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
-  };
 
   const handleSearchChange = (query) => {
     setSearchQuery(query);
+  };
+
+  const handleFilterChange = (statusId) => {
+    setSelectedStatus(statusId);
   };
 
   const handleAddRecipe = () => {
@@ -44,7 +42,7 @@ function RecipeList({ navigation }) {
         onChangeText={handleSearchChange}
       />
 
-      <RecipeFilter currentFilter={filter} onFilterChange={handleFilterChange} />
+      <RecipeFilter selectedStatus={selectedStatus} onSelectStatus={handleFilterChange} />
 
       {filteredRecipes.length === 0 ? (
         <View style={styles.emptyState}>
@@ -54,18 +52,19 @@ function RecipeList({ navigation }) {
           </TouchableOpacity>
         </View>
       ) : (
-        <View>
-          {recipes.map((item) => (
+        <FlatList
+          data={filteredRecipes}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
             <Recipe
-              key={item.id}
               id={item.id}
               name={item.name}
               description={item.description}
               status={item.status}
-              navigation={navigation}
             />
-          ))}
-        </View>
+          )}
+          ListEmptyComponent={<Text>Nenhuma receita encontrada.</Text>}
+        />
       )}
     </View>
   );

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet } from 'react-native';
-import RecipeFilter from '../components/RecipeFilter';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList } from 'react-native';
 import Recipe from '../components/Recipe';
 
 const recipes = [
@@ -12,22 +11,18 @@ const recipes = [
 ];
 
 function Home({ navigation }) {
-  const [filter, setFilter] = useState('in_progress');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredRecipes = recipes
-    .filter(recipe => recipe.status === filter)
-    .filter(recipe => recipe.name.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    console.log("teste")
-
-  const handleFilterChange = (newFilter) => {
-    setFilter(newFilter);
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Bom dia';
+    if (hour < 18) return 'Boa tarde';
+    return 'Boa noite';
   };
 
-  const handleSearchChange = (query) => {
-    setSearchQuery(query);
-  };
+  const filteredRecipes = recipes.filter(recipe =>
+    recipe.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleAddRecipe = () => {
     navigation.navigate('RecipeRegistration');
@@ -35,11 +30,17 @@ function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.greeting}>{`${getGreeting()}, Fic Cerveijeiro!`}</Text>
+      </View>
       <Text style={styles.title}>Receitas</Text>
 
-    
-
-      <RecipeFilter currentFilter={filter} onFilterChange={handleFilterChange} />
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar receitas..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+      />
 
       {filteredRecipes.length === 0 ? (
         <View style={styles.emptyState}>
@@ -49,18 +50,20 @@ function Home({ navigation }) {
           </TouchableOpacity>
         </View>
       ) : (
-        <View>
-          {recipes.map((item) => (
+        <FlatList
+          data={filteredRecipes}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
             <Recipe
               key={item.id}
               id={item.id}
               name={item.name}
               description={item.description}
               status={item.status}
-              navigation={navigation}
             />
-          ))}
-        </View>
+          )}
+          ListEmptyComponent={<Text>Nenhuma receita encontrada.</Text>}
+        />
       )}
     </View>
   );
@@ -70,6 +73,13 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     flex: 1,
+  },
+  header: {
+    marginBottom: 20,
+  },
+  greeting: {
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 24,

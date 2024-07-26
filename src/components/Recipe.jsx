@@ -1,25 +1,26 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const Recipe = ({ id, name, description, status }) => {
   const navigation = useNavigation();
 
+  // Mapeamento de cores específicas para receitas 1 e 4
   const statusColor = {
-    in_progress: 'yellow',
-    draft: 'red',
-    completed: 'green'
+    '1': '#BD1E18', // Vermelho para Receita 1
+    '4': '#BD1E18', // Vermelho para Receita 4
+    default: '#1F7D38' // Verde para outras receitas
   };
 
   const handlePress = () => {
-    console.log('exempllo: ID da Receita', `ID: ${id}`);
+    console.log('ID da Receita:', `ID: ${id}`);
     navigation.navigate('RecipeDetails', { recipeId: id });
   };
 
   return (
     <TouchableOpacity
-      style={[styles.container, { backgroundColor: statusColor[status] }]}
+      style={[styles.container, { backgroundColor: statusColor[id] || statusColor.default }]}
       onPress={handlePress}
     >
       <View style={styles.content}>
@@ -50,11 +51,12 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 18,
+    color: '#fff',
     fontWeight: 'bold',
   },
   description: {
     fontSize: 14,
-    color: '#333',
+    color: '#fff',
     marginVertical: 5,
   },
   editButton: {
