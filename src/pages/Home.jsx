@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList } from 'react-native';
+import { StatusBar } from 'expo-status-bar'; // Importar o StatusBar do expo-status-bar
 import Recipe from '../components/Recipe';
 
 const recipes = [
@@ -30,6 +31,7 @@ function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <StatusBar style="dark" />
       <View style={styles.header}>
         <Text style={styles.greeting}>{`${getGreeting()}, Fic Cerveijeiro!`}</Text>
       </View>

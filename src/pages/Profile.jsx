@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Button } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Button, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
   const [image, setImage] = useState(null);
   const [name, setName] = useState('Carlos');
   const [email, setEmail] = useState('carlos@example.com');
+  const navigation = useNavigation();
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -27,15 +30,30 @@ const Profile = () => {
     // Aqui você pode adicionar a lógica para salvar as informações do perfil
   };
 
+  const handleLogout = async () => {
+    try {
+      // Remove tokens ou dados de autenticação armazenados
+      await AsyncStorage.removeItem('userToken'); // Exemplo para remover um token armazenado
+      
+      // Redireciona para a tela de login
+      navigation.navigate('Login');
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível fazer logout.');
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
       <Text style={styles.title}>Perfil</Text>
       <View style={styles.profileImageContainer}>
         {image ? (
           <Image source={{ uri: image }} style={styles.profileImage} />
         ) : (
           <View style={styles.defaultImage}>
-            <Text style={styles.defaultText}>Selecionar Foto</Text>
+            <Text style={styles.defaultText}>Sua Foto</Text>
           </View>
         )}
         <TouchableOpacity style={styles.editButton} onPress={pickImage}>
@@ -121,6 +139,24 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ddd',
     marginBottom: 20,
     paddingVertical: 5,
+  },
+  logoutButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: '#dc3545',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    zIndex: 1000, // Adiciona zIndex para garantir que o botão fique sobre outros elementos
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
